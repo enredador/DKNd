@@ -1,0 +1,3 @@
+#!/bin/bash
+
+DKNjson2dict.py | sed -E "s/'([0-9])':/\1:/g"

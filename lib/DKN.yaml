@@ -1,0 +1,25 @@
+
+#
+#  BRP069A62 Daikin LAN Adapter ip address
+#
+altherma:
+  ip: 192.168.1.3
+
+#
+# Home assistant data: ip, port and access token
+#
+homeassistant:
+  ip: 192.168.1.2
+  port: 8123
+  token: 4oJ71G28O8JIUpIrN8IiIdRv2CIwIafXVCJz.4oJfYXQ8O9ErND6sMT6nNpIiIcVu2CIwMT6sMpatODEtM8m80XNpI9e8YsUrY9IvYsEmZDF9NGNcZ9atZcUmODJbZD2vZDEpNp685Q.xeDJOmsbm7hIHbxA3LACfdlTuiHShqx4HcjqnJS3kHu
+
+#
+# polling interval,
+# mode: rt
+# mode: lwt (any value, or even undefined) for lwt mode
+# programs: file with the schedules
+#
+config:
+  interval: 60
+#  mode: rt
+  programs: /home/pi/lib/DKN.dict

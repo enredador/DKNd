@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export PATH=/home/pi/bin:$PATH
+
+DKNjson2dict < /var/www/html/lib/DKN.json > /var/www/html/lib/DKN.dict
+
+DKN.py --config /var/www/html/lib/DKN.yaml schedules_set CHlistCool
+DKN.py --config /var/www/html/lib/DKN.yaml schedules_set CHlistHeat
+DKN.py --config /var/www/html/lib/DKN.yaml schedules_set DHWlistHeat
