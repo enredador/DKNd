@@ -29,7 +29,14 @@ Requires:
 
 ## Usage
 
-- Command line run: `bin/DKN.py --config lib/DKN.yaml --help`
+- Command line help:
+- - `python3 bin/DKN.py --config lib/DKN.yaml --help`
+- - `python3 bin/DKN.py --config lib/DKN.yaml get --help`
+- - `python3 bin/DKN.py --config lib/DKN.yaml set --help`
+
+- Get LWT current value `python3 bin/DKN.py --config lib/DKN.yaml get LWTcurrent`
+- Switch off CH  `python3 bin/DKN.py --config lib/DKN.yaml set CHonoff off`
+- Switch off CH and update homeassistant: `python3 bin/DKN.py --config lib/DKN.yaml set CHonoff off --updateHA`
 
 ## Setup
 
