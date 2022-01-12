@@ -10,12 +10,12 @@
 # It is provided without any warranty, explicit or implicit.
 # Please use it at your own risk.
 #
-# Author: José Miguel Goñi Menoyo
-#         josemiguel.gonimenoyo@gmail.com
+# Author: José Miguel Goñi Menoyo (@enredador)
 #
 #  v1.0 23/10/2019
 #  v2.0 23/03/2020
 #  v3.0 26/08/2021 Support of LWT mode
+#  v4.0 12/01/2022 Bug fixes and documentation
 #
 # Libraries
 #
