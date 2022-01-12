@@ -1,0 +1,10 @@
+{
+  "name": "DKNd",
+  "documentation": "https://github.com/enredador/DKNd",
+  "issue_tracker":  "https://github.com/enredador/DKNd/issues",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@enredador"],
+  "config_flow": true,
+  "version": "1.0.0"
+}
