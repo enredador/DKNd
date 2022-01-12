@@ -329,24 +329,42 @@ write_items = {
   }
 
 
-
 #
 # Schedule management items
+#
+
+#
+# Exclusive for RT (room temperature) mode
 # 
-schedule_items = {
+schedule_items_rt = {
   "CHlistCool":   {"endpoint": "/[0]/MNAE/1/Schedule/List/Cooling",
                    "programs":4, "actions": 6},
   "CHlistHeat":   {"endpoint": "/[0]/MNAE/1/Schedule/List/Heating",
                    "programs":6, "actions": 6},
-  "DHWlistHeat":  {"endpoint": "/[0]/MNAE/2/Schedule/List/Heating",
-                   "programs":4, "actions": 4},
+  }
+
+schedule_read_items_rt = {
   "CHdefault":    {"endpoint": "/[0]/MNAE/1/Schedule/Default"},
-  "CHnext":       {"endpoint": "/[0]/MNAE/1/Schedule/Next"},
+  "CHnext":       {"endpoint": "/[0]/MNAE/1/Schedule/Next"}
+  }
+
+#
+# For RT (room temperature) and LWT (leaving water temperature) modes
+# 
+schedule_items = {
+  "DHWlistHeat":  {"endpoint": "/[0]/MNAE/2/Schedule/List/Heating",
+                   "programs":4, "actions": 4}
+  }
+
+#
+# For RT (room temperature) and LWT (leaving water temperature) modes
+# 
+schedule_read_items = {
   "DHWnext":      {"endpoint": "/[0]/MNAE/2/Schedule/Next"}
   }
 
 #
-# Not working in my installation
+# Not working items in my installation
 # 
 not_working_items = {
   "0/ConnectionTest":                     "/[0]/MNAE/0/ConnectionTest",
@@ -564,61 +582,60 @@ def build_payload(item):
 # Process set command line arguments
 #
 def set_function(args):
-  if args.command in write_items.keys():
+  if args.item in write_items.keys():
     result = False
-    if("values" in write_items[args.command]):
+    if("values" in write_items[args.item]):
       if(args.value != None):
-        if(args.value in write_items[args.command]["values"]):
-           type = write_items[args.command]["values"][args.value][0]
+        if(args.value in write_items[args.item]["values"]):
+           type = write_items[args.item]["values"][args.value][0]
            try:
              ws = create_connection("ws://" + cfg["altherma"]["ip"] + "/mca")
-             result = setValue(ws, write_items[args.command]["endpoint"],
-                                   write_items[args.command]["payload"][type].format(write_items[args.command]["values"][args.value][1]))
+             result = setValue(ws, write_items[args.item]["endpoint"],
+                                   write_items[args.item]["payload"][type].format(write_items[args.item]["values"][args.value][1]))
            except Exception as e:
              do_log("!! Exception {}".format(e))
              return
            ws.close()
       else:
-        print("Allowed values for {}: {}".format(args.command, " ".join(write_items[args.command]["values"].keys())))
+        print("Allowed values for {}: {}".format(args.item, " ".join(write_items[args.item]["values"].keys())))
         return
     else:
       if(args.value != None):
         try:
           ws = create_connection("ws://" + cfg["altherma"]["ip"] + "/mca")
-          result = setValue(ws, write_items[args.command]["endpoint"], args.value)
+          result = setValue(ws, write_items[args.item]["endpoint"], args.value)
         except Exception as e:
           do_log("!! Exception {}".format(e))
           return
         ws.close()
       else:
-        print("Allowed values for {}: {}".format(args.command, write_items[args.command]["numeric"]))
+        print("Allowed values for {}: {}".format(args.item, write_items[args.item]["numeric"]))
         return
     print("ok" if result else "ko", end='')
     if (result and args.updateHA):
-      do_inform_HA(args.command, args.value)
+      do_inform_HA(args.item, args.value)
   else:
-    do_log("set: {} not valid endpoint in this mode".format(args.command))
+    do_log("set: {} invalid endpoint in this mode".format(args.item))
 
 #
 # Process get command line arguments
 #
 def get_function(args):
-  if args.command in read_items.keys():
+  if args.item in read_items.keys():
     try:
       ws = create_connection("ws://" + cfg["altherma"]["ip"] + "/mca")
     except Exception as e:
       do_log("!! Exception {}".format(e))
       return
-    endpoint = read_items[args.command]["endpoint"]
+    endpoint = read_items[args.item]["endpoint"]
     try:
-      value = translate_value(args.command, getValue(ws, endpoint))
+      value = translate_value(args.item, getValue(ws, endpoint))
+      print (value, end='')
     except Exception as e:
-      do_log("!! Exception {}".format(e))
+      do_log("Could not get value for {}".format(args.item))
     ws.close()
-    print (value, end='')
   else:
-      do_log("get: {} not valid endpoint in this mode".format(args.command))
-
+      do_log("get: {} invalid endpoint in this mode".format(args.item))
 
 #
 # Process sensord command line arguments
@@ -631,13 +648,19 @@ def sensord_function(args):
       sleep_time = DELAY_INT
   else:
     sleep_time = args.delay
-  endpoints = []
-  for item in args.command:
-    if (item in read_items.keys()):
-      endpoints.append(item)
-    else:
-      do_log("sensord: {} not valid endpoint in this mode".format(item))
-  endpoints = list(set(endpoints))
+  if 'all' in args.item:
+    endpoints = read_items
+  else:    
+    endpoints = []
+    for item in args.item:
+      if (item in read_items.keys()):
+        endpoints.append(item)
+      else:
+        if item in all_read_items.keys():
+          do_log("Invalid endpoint in this mode: {} in sensord command. Please use one of: {}.".format(item, list(read_items.keys())))
+        else:
+          do_log("Unknown endpoint: {} in sensord command. Please use one of: {}.".format(item, list(read_items.keys())))
+    endpoints = list(set(endpoints))
 
   while True:
     try:
@@ -645,14 +668,14 @@ def sensord_function(args):
     except Exception as e:
       do_log("!! Exception {}".format(e))
       time.sleep(sleep_time)
-      next
+      continue
 
     for item in endpoints:
       try:
           value = translate_value(item, getValue(ws, read_items[item]["endpoint"]))
       except Exception as e:
-        do_log("!! Exception {}".format(e))
-        next
+        do_log("Could not get value for {}".format(item))
+        continue
       do_inform_HA(item,  value )
       do_log("{}: {}".format(item, value))
     ws.close()
@@ -664,13 +687,19 @@ def sensord_function(args):
 # Process schedule_get command line arguments
 #
 def schedule_get_function(args):
-  endpoints = []
-  for item in args.command:
-    if (item in schedule_items.keys()):
-      endpoints.append(item)
-    else:
-      do_log("Invalid endpoint: {} in schedule command".format(item))
-  endpoints = list(set(endpoints))
+  if 'all' in args.item:
+    endpoints = schedule_read_items
+  else:
+    endpoints = []
+    for item in args.item:
+      if (item in schedule_read_items.keys()):
+        endpoints.append(item)
+      else:
+        if item in all_schedule_read_items.keys():
+          do_log("Invalid endpoint in this mode: {} in schedule command. Please use one of: {}.".format(item, list(schedule_read_items.keys())))
+        else:
+          do_log("Unknown endpoint: {} in schedule command. Please use one of: {}.".format(item, list(schedule_read_items.keys())))
+    endpoints = list(set(endpoints))
   
   try:
     ws = create_connection("ws://" + cfg["altherma"]["ip"] + "/mca")
@@ -678,18 +707,18 @@ def schedule_get_function(args):
     do_log("!! Exception {}".format(e))
     return
 
-  pp =pprint.PrettyPrinter(indent=2)
+  pp = pprint.PrettyPrinter(indent=2)
   for item in endpoints:
     try:
-      value =  getValue(ws, schedule_items[item]["endpoint"])
+      value = getValue(ws, schedule_read_items[item]["endpoint"])
     except Exception as e:
-      do_log("!! Exception {}".format(e))
-      next
+      do_log("Could not get value for {}".format(item))
+      continue
     value = json.loads(value)["data"]
     if type(value) is dict:
       pp.pprint(value)
     else:
-      if("programs" in schedule_items[item]):
+      if("programs" in schedule_read_items[item]):
         programs[item] = {}
         for x in value:
            build_program(item, value.index(x), x)
@@ -707,9 +736,9 @@ def schedule_set_function(args):
   read_programs(programs_file)
   try:
     ws = create_connection("ws://" + cfg["altherma"]["ip"] + "/mca")
-    result = setValue(ws, schedule_items[args.command]["endpoint"], build_payload(args.command))
+    result = setValue(ws, schedule_items[args.item]["endpoint"], build_payload(args.item))
   except Exception as e:
-    do_log("!! Exception {}".format(e))
+    do_log("Could not set value for {}".format(item))
     return
   ws.close()
   print("ok" if result else "ko", end='')
@@ -718,9 +747,10 @@ def schedule_set_function(args):
 # Program execution start
 ####################################################################################################
 
-all_read_items =   { **read_items,  **read_items_rt  }
-all_write_items =  { **write_items, **write_items_rt }
-
+all_read_items          = { **read_items,          **read_items_rt  }
+all_write_items         = { **write_items,         **write_items_rt }
+all_schedule_items      = { **schedule_items,      **schedule_items_rt }
+all_schedule_read_items = { **schedule_read_items, **schedule_read_items_rt, **schedule_items, **schedule_items_rt }
 
 #
 # Parameters processing
@@ -734,27 +764,27 @@ parser.add_argument('-r', '--rtmode',   help="Use with Altherma in RT mode", act
 subparsers = parser.add_subparsers(help='Main command option')
 
 parser_get = subparsers.add_parser('get', help='Get a value from DAIKIN Altherma')
-parser_get.add_argument('command', type=str, choices=all_read_items.keys(), help="Item to get value from")
+parser_get.add_argument('item', type=str, choices=all_read_items.keys(), help="Item to get value from")
 parser_get.set_defaults(func=get_function)
 
 parser_set = subparsers.add_parser('set',  help='Set a value into DAIKIN Altherma')
-parser_set.add_argument('command', type=str, choices=all_write_items.keys(), help="Item to set value to")
+parser_set.add_argument('item', type=str, choices=all_write_items.keys(), help="Item to set value to")
 parser_set.add_argument('value', type=str, nargs='?', help="Value to set")
 parser_set.add_argument('--updateHA', '-u', action="store_true", help="Update HA")
 parser_set.set_defaults(func=set_function)
 
 parser_sd = subparsers.add_parser('sensord',  help='Run as a daemon to get Altherma values and send them to HA')
-parser_sd.add_argument('command', type=str, nargs='*', default=all_read_items.keys(), help="Item endpoint to get values from")
+parser_sd.add_argument('item', type=str, nargs='*', default=['all'], help="Item endpoint to get values from (or 'all')")
 parser_sd.add_argument('--delay', '-d', type=int, help="Interval for reading values")
 parser_sd.add_argument('--once', action="store_true", help="Run once and exit")
 parser_sd.set_defaults(func=sensord_function)
 
 parser_sg = subparsers.add_parser('schedules_get',  help='Get Altherma schedules info')
-parser_sg.add_argument('command', type=str, nargs='*', default=schedule_items.keys(), help="Item endpoint to get values from")
+parser_sg.add_argument('item', type=str, nargs='*', default=['all'], help="Item schedule to get values from (or 'all')")
 parser_sg.set_defaults(func=schedule_get_function)
 
-parser_st = subparsers.add_parser('schedules_set',  help='Upload Altherma schedules')
-parser_st.add_argument('command', type=str, choices=['CHlistCool', 'CHlistHeat', 'DHWlistHeat'], help="Item endpoint to get values from")
+parser_st = subparsers.add_parser('schedules_set',  help='Upload schedules to Altherma')
+parser_st.add_argument('item', type=str, choices=all_schedule_items.keys(), help="Item schedule to set values to")
 parser_st.add_argument('value', type=str, nargs='?', help="Value to set")
 parser_st.set_defaults(func=schedule_set_function)
 
@@ -803,12 +833,16 @@ else:
 if(rtmode):
    read_items.update(read_items_rt)
    write_items.update(write_items_rt)
+   schedule_read_items.update(schedule_read_items_rt)
+   schedule_items.update(schedule_items_rt)
+
+schedule_read_items.update(schedule_items)
 
 #
 # Execution following command-line options
 #
 try:
-  if('command' in args):
+  if('item' in args):
       args.func(args)
   else:
     parser.print_help()
