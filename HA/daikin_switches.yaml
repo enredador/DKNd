@@ -1,0 +1,29 @@
+################################################################
+### Daikin Altherma
+################################################################
+- platform: template
+  switches:
+    ch_onoff:
+      friendly_name: Heating/cooling
+      value_template: "{{ is_state('binary_sensor.dkn_ch_isonoff', 'on') }}"
+      turn_on:
+        service: shell_command.dkn_ch_on
+      turn_off:
+        service: shell_command.dkn_ch_off
+
+    dhw_onoff:
+      friendly_name: Domestic hot water
+      value_template: "{{ is_state('binary_sensor.dkn_dhw_isonoff', 'on') }}"
+      turn_on:
+        service: shell_command.dkn_dhw_on
+      turn_off:
+        service: shell_command.dkn_dhw_off
+
+    dhw_powerful:
+      friendly_name: DHW resistor
+      value_template: "{{ is_state('binary_sensor.dkn_dhw_powerful', 'on') }}"
+      turn_on:
+        service: shell_command.dkn_dhw_powerful_on
+      turn_off:
+        service: shell_command.dkn_dhw_powerful_off
+

@@ -1,0 +1,15 @@
+dhw_active:
+  name: Programa activo DHW
+  options:
+    - acs_usuario
+    - acs_predefinido_1
+    - acs_predefinido_2
+    - acs_predefinido_3
+  icon: mdi:thermomether
+
+ch_mode:
+  name: Modo de climatización
+  options:
+    - heating
+    - cooling
+    - auto

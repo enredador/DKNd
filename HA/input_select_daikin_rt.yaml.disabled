@@ -1,0 +1,14 @@
+ch_active:
+  name: Programa activo CH
+  options:
+    - calef_semana
+    - calef_fin_de_semana
+    - calef_casa_vacia
+    - calef_predefinido_1
+    - calef_predefinido_2
+    - calef_predefinido_3
+    - refr_usuario
+    - refr_predefinido_1
+    - refr_predefinido_2
+    - refr_predefinido_3
+  icon: mdi:thermomether

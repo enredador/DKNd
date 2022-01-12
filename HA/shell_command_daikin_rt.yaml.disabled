@@ -1,0 +1,7 @@
+################################################################
+### Daikin Altherma control services
+#################################################################
+
+dkn_ch_setpoint:   /config/bin/DKN.py --config /config/lib/DKN.yaml set CHsetptemp  {{ states('input_number.ch_setpoint') }}  --update
+
+dkn_ch_active:   /config/bin/DKN.py --config /config/lib/DKN.yaml set CHactive  {{ states('input_select.ch_active')  }}

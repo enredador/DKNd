@@ -1,0 +1,53 @@
+################################################################
+### Rules CH setpoint
+#################################################################
+- alias: Modo de climatización
+  id: b9b07d66-d3c7-4045-b37c-df6eaecf9a04
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: input_select.ch_mode
+  action:
+    service: shell_command.dkn_ch_mode
+
+- alias: Modo de climatización (retorno)
+  id: 16938f44-1712-4e52-997a-882403c38f13
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: sensor.dkn_ch_mode
+  action:
+    service: input_select.select_option
+    data_template:
+      entity_id: input_select.ch_mode
+      option: "{{ states('sensor.dkn_ch_mode') }}"
+
+- alias: Temperatura de consigna ACS
+  id: 027bca08-7b4a-461f-b970-ecdbe4146468
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: input_number.dhw_setpoint
+  action:
+    service: shell_command.dkn_dhw_setpoint
+
+- alias: Temperatura de consigna ACS (retorno)
+  id: b0dcd484-ebbe-4d93-a522-8238df62aafa
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: sensor.dhw_setpoint
+  action:
+    service: input_number.set_value
+    data_template:
+      entity_id: input_number.dhw_setpoint
+      value: "{{ states('sensor.dhw_setpoint') | float }}"
+
+- alias: Programa DHW
+  id: 317248f8-144a-437c-b3fd-f69f306e73a7
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: input_select.dhw_active
+  action:
+    service: shell_command.dkn_dhw_active

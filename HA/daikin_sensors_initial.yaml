@@ -1,0 +1,9 @@
+################################################################
+### Daikin sensor out_temp: Not updating but available on startup
+### externally updated by DKN.py daemon
+################################################################
+- platform: command_line
+  command: '/config/bin/DKN.py --config /config/lib/DKN.yaml get CHouttemp'
+  name: dkn_out_temp
+  unit_of_measurement: "°C"
+  scan_interval: 23000000

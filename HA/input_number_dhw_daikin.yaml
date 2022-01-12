@@ -1,0 +1,7 @@
+dhw_setpoint:
+  name: Temperatura de consigna (ACS)
+  min: 30
+  max: 50
+  step: 1
+  icon: mdi:thermomether
+  unit_of_measurement: "°C"

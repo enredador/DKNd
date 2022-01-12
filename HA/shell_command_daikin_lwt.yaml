@@ -1,0 +1,8 @@
+################################################################
+### Daikin Altherma control services
+#################################################################
+dkn_lwt_setpauto:  /config/bin/DKN.py --config /config/lib/DKN.yaml set LWTsetpauto {{ states('input_number.lwt_setpauto') }} --update
+
+dkn_lwt_setpheating:  /config/bin/DKN.py --config /config/lib/DKN.yaml set LWTsetpheat {{ states('input_number.lwt_setpheating') }} --update
+
+dkn_lwt_setpcooling:  /config/bin/DKN.py --config /config/lib/DKN.yaml set LWTsetpcool {{ states('input_number.lwt_setpcooling') }} --update

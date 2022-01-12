@@ -1,0 +1,21 @@
+################################################################
+### Daikin Altherma control services
+#################################################################
+dkn_ch_on:      /config/bin/DKN.py --config /config/lib/DKN.yaml set CHonoff on  --update
+dkn_ch_off:     /config/bin/DKN.py --config /config/lib/DKN.yaml set CHonoff off --update
+
+dkn_ch_heating: /config/bin/DKN.py --config /config/lib/DKN.yaml set CHmode heating --update
+dkn_ch_cooling: /config/bin/DKN.py --config /config/lib/DKN.yaml set CHmode cooling --update
+dkn_ch_auto:    /config/bin/DKN.py --config /config/lib/DKN.yaml set CHmode auto    --update
+
+dkn_dhw_on:     /config/bin/DKN.py --config /config/lib/DKN.yaml set DHWonoff on  --update
+dkn_dhw_off:    /config/bin/DKN.py --config /config/lib/DKN.yaml set DHWonoff off --update
+
+dkn_dhw_powerful_on:  /config/bin/DKN.py --config /config/lib/DKN.yaml set DHWpowerful on  --update
+dkn_dhw_powerful_off: /config/bin/DKN.py --config /config/lib/DKN.yaml set DHWpowerful off --update
+
+dkn_dhw_setpoint:  /config/bin/DKN.py --config /config/lib/DKN.yaml set DHWsetptemp {{ states('input_number.dhw_setpoint') }} --update
+
+dkn_ch_mode:     /config/bin/DKN.py --config /config/lib/DKN.yaml set CHmode    {{ states('input_select.ch_mode')    }} --update
+
+dkn_dhw_active:  /config/bin/DKN.py --config /config/lib/DKN.yaml set DHWactive {{ states('input_select.dhw_active') }}

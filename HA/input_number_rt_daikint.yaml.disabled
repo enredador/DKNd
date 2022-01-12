@@ -1,0 +1,7 @@
+ch_setpoint:
+  name: Temperatura de consigna (CH)
+  min: 15
+  max: 35
+  step: 0.5
+  icon: mdi:thermomether
+  unit_of_measurement: "°C"

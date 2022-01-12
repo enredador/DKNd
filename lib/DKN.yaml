@@ -16,7 +16,7 @@ homeassistant:
 #
 # polling interval,
 # mode: rt
-# mode: lwt (any value, or even undefined) for lwt mode
+# mode: lwt (any value or undefined) for lwt mode
 # programs: file with the schedules
 #
 config:

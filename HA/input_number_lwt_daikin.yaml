@@ -1,0 +1,23 @@
+lwt_setpheating:
+  name: Temperatura de impulsión calentamiento (LWT)
+  min: 18
+  max: 40
+  step: 1
+  icon: mdi:thermomether
+  unit_of_measurement: "°C"
+
+lwt_setpcooling:
+  name: Temperatura de impulsión refrescamiento (LWT)
+  min: 18
+  max: 40
+  step: 1
+  icon: mdi:thermomether
+  unit_of_measurement: "°C"
+
+lwt_setpauto:
+  name: Temperatura de impulsión automático (LWT)
+  min: 18
+  max: 40
+  step: 1
+  icon: mdi:thermomether
+  unit_of_measurement: "°C"
