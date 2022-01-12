@@ -64,8 +64,9 @@ Requires:
     - Upload schedule for DHW that is stored in lib/DKN.dict:\
       `python3 bin/DKN.py --config lib/DKN.yaml --programs lib/DKN.dict schedules_set DHWlistHeat`
 
-Creating or editing the schedules file is out of the scope of DKN.py. A php code is provided to help in this task when it is installed in the appropriate directory
-and called from a web browser. The auxiliary programs that it uses are also provided. No documentation for that is provided in this preliminar upload.
+Creating or editing the schedules file is out of the scope of `DKN.py`. A php code is provided in the directory `www`to help in this task when it is installed in
+he appropriate directory for your web server and called from a web browser.
+The auxiliary programs that it needs are also provided. No documentation for that is provided in this preliminar upload.
 
 ## Configuration
 
